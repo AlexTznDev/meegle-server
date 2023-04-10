@@ -20,8 +20,6 @@ const isAuthenticated = expressjwt({
             console.log("Token not valid")
             return null
         }
-
-        console.log("Token is good")
         return token
 
         //console.log(req.headers.authorization)

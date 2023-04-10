@@ -8,4 +8,11 @@ const authRoutes = require("./auth.routes.js")
 router.use("/auth", authRoutes)
 
 
+const profilRoutes = require("./profil.routes.js")
+router.use("/profil", profilRoutes)
+
+const eventRoutes = require("./event.routes.js")
+router.use("/event", eventRoutes)
+
+
 module.exports = router;
