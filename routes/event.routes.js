@@ -122,6 +122,8 @@ router.patch("/:idEvent/addRequest", isAuthenticated ,async (req, res, next) => 
 
 
 
+  
+
 //PATCH "/:idEvent/remove" => retirer participant a l'évent
 router.patch("/:idEvent/remove", isAuthenticated ,async (req, res, next) => {
     
@@ -138,6 +140,8 @@ router.patch("/:idEvent/remove", isAuthenticated ,async (req, res, next) => {
       next(error);
     }
   });
+
+
 //PATCH "/:idEvent/acceptRequest" => ajouter participant a l'évent
 router.patch("/:idEvent/acceptRequest" ,async (req, res, next) => {
     
@@ -157,8 +161,8 @@ router.patch("/:idEvent/acceptRequest" ,async (req, res, next) => {
     }
   });
 
-
-//PATCH "/:idEvent/acceptRequest" => ajouter participant a l'évent
+//! peutetre possibilité d utiliser une seul route de back pour accepter ou refuser grace a un boolean en envoi req.body
+//PATCH "/:idEvent/refuseRequest" => refuser participant a l'évent
 router.patch("/:idEvent/refuseRequest" ,async (req, res, next) => {
     
     const {idEvent} = req.params
