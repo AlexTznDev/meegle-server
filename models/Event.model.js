@@ -11,8 +11,17 @@ const eventSchema = new mongoose.Schema({
   date:String,
   hour:String,
   description:String,
-  participant:
-  [
+
+requestParticipation:[
+
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  }
+
+],
+
+  participant:[
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

@@ -66,7 +66,7 @@ router.get("/:id", async (req, res, next) => {
   }
 });
 
-//PATCH "/:id" => edit el exercissio por su id
+//PATCH "/:id" => edit event
 router.patch("/:id", async (req, res, next) => {
   const { id } = req.params;
   const {
@@ -96,6 +96,91 @@ router.patch("/:id", async (req, res, next) => {
     next(error);
   }
 });
+
+
+
+
+
+//PATCH "/:idEvent/addrequest" => ajouter participant au request de participation a l'évent
+router.patch("/:idEvent/addRequest", isAuthenticated ,async (req, res, next) => {
+    
+    const {idEvent} = req.params
+    const {_id} = req.payload
+
+    try {
+      await Event.findByIdAndUpdate(idEvent, {
+        $push: { requestParticipation: _id},
+      });
+  
+      res.json("Participant ajouter");
+    } catch (error) {
+      next(error);
+    }
+  });
+
+
+
+
+
+//PATCH "/:idEvent/remove" => retirer participant a l'évent
+router.patch("/:idEvent/remove", isAuthenticated ,async (req, res, next) => {
+    
+    const {idEvent} = req.params
+    const {idUser} = req.body
+
+    try {
+      await Event.findByIdAndUpdate(idEvent, {
+        $pull: { participant: idUser},
+      });
+  
+      res.json("Participant retirer");
+    } catch (error) {
+      next(error);
+    }
+  });
+//PATCH "/:idEvent/acceptRequest" => ajouter participant a l'évent
+router.patch("/:idEvent/acceptRequest" ,async (req, res, next) => {
+    
+    const {idEvent} = req.params
+    const {idUser} = req.body
+
+    try {
+      await Event.findByIdAndUpdate(idEvent, {
+        $pull: { requestParticipation: idUser},
+        $push: { participant: idUser}
+
+      });
+  
+      res.json("User accepté en participant");
+    } catch (error) {
+      next(error);
+    }
+  });
+
+
+//PATCH "/:idEvent/acceptRequest" => ajouter participant a l'évent
+router.patch("/:idEvent/refuseRequest" ,async (req, res, next) => {
+    
+    const {idEvent} = req.params
+    const {idUser} = req.body
+
+    try {
+      await Event.findByIdAndUpdate(idEvent, {
+        $pull: { requestParticipation: idUser}
+        
+      });
+  
+      res.json("User refusé");
+    } catch (error) {
+      next(error);
+    }
+  });
+
+
+
+
+
+
 
 //DELETE "/:id" => delete el exercissio por su id
 router.delete("/:id", async (req, res, next) => {
