@@ -1,31 +1,31 @@
-const {expressjwt} = require("express-jwt")
+const admin = require("./auth.middlewares");
 
-const isAuthenticated = expressjwt({
-    // 4.1 Aqui todas las configuraciones para desencriptar el token
-    secret: process.env.TOKEN_SECRET,
-    algorithms:["HS256"], // el algoritmo que usamos para cifrar
-    requestProperty: "payload", // para permitirnos tener el payload del tojen para saber que usario es el que se esta logeando
-    getToken: (req) =>{
+const isAuthenticated = async (req, res, next) => {
+  if (
+    req.headers === undefined ||
+    req.headers.authorization === undefined
+  ) {
+    console.log("User doesn't have token");
+    return res.status(401).json({ message: "Unauthorized" });
+  }
 
-        if(req.headers === undefined || req.headers.authorization === undefined) {
-            console.log("User don't have token")
-            return null
-        }
+  const tokenArr = req.headers.authorization.split(" ");
+  const tokenType = tokenArr[0];
+  const token = tokenArr[1];
 
-        const tokenArr = req.headers.authorization.split(" ")
-        const tokenType = tokenArr[0]
-        const token = tokenArr[1]
+  if (tokenType !== "Bearer") {
+    console.log("Token not valid");
+    return res.status(401).json({ message: "Unauthorized" });
+  }
 
-        if(tokenType!== "Bearer"){
-            console.log("Token not valid")
-            return null
-        }
-        return token
+  try {
+    const decodedToken = await admin.auth().verifyIdToken(token);
+    req.payload = decodedToken;
+    next();
+  } catch (error) {
+    console.error("Error while verifying token", error);
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+};
 
-        //console.log(req.headers.authorization)
-
-
-    }
-})
-
-module.exports = isAuthenticated
+module.exports = isAuthenticated;

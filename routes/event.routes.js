@@ -20,7 +20,7 @@ router.get("/", isAuthenticated, async (req, res, next) => {
   }
 });
 
-//POST "/exercise" => crear exercissio
+//POST "/" => crear event
 router.post("/", isAuthenticated, async (req, res, next) => {
   const {
     latitude,

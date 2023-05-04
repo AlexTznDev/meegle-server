@@ -10,12 +10,15 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
-    password: {
-      type: String,
-      required: [true, "Password is required."],
-    },
+    password: String
+    ,
     note: Number,
-
+    firebaseUid: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+  
     name: String,
     imageProfile: {
       type: String,
