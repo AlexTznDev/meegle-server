@@ -1,4 +1,4 @@
-const admin = require("./auth.middlewares");
+const admin = require("../firebaseAdmin");
 
 const isAuthenticated = async (req, res, next) => {
   if (
