@@ -10,21 +10,24 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
-    password: String
-    ,
+    password: String,
     note: Number,
     firebaseUid: {
       type: String,
       required: true,
       unique: true,
     },
-    gender:String,
-    name: String,
+    gender: {
+      type: String,
+      default: "no defined",
+    },
+    username: String,
     imageProfile: {
       type: String,
       default:
         "https://media.istockphoto.com/id/1337144146/vector/default-avatar-profile-icon-vector.jpg?s=612x612&w=0&k=20&c=BIbFwuv7FxTWvh5S3vB6bkT0Qv8Vn8N5Ffseq84ClGI=",
     },
+
     description: String,
     age: Number,
     activity: String,

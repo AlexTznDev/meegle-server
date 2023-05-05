@@ -1,31 +1,35 @@
-const admin = require("../firebaseAdmin");
+// 4. CREAMOS EL MIDDLEWARE PARA PODER SABER SI EL USUARIO ESTA AUTENTIFICADO.
 
-const isAuthenticated = async (req, res, next) => {
-  if (
-    req.headers === undefined ||
-    req.headers.authorization === undefined
-  ) {
-    console.log("User doesn't have token");
-    return res.status(401).json({ message: "Unauthorized" });
-  }
+const {expressjwt} = require("express-jwt")
 
-  const tokenArr = req.headers.authorization.split(" ");
-  const tokenType = tokenArr[0];
-  const token = tokenArr[1];
+const isAuthenticated = expressjwt({
+    
+    secret: process.env.TOKEN_SECRET,
+    algorithms:["HS256"], 
+    requestProperty: "payload", 
+    getToken: (req) =>{
 
-  if (tokenType !== "Bearer") {
-    console.log("Token not valid");
-    return res.status(401).json({ message: "Unauthorized" });
-  }
+        if(req.headers === undefined || req.headers.authorization === undefined) {
+            console.log("usuario no tiene token")
+            return null
+        }
 
-  try {
-    const decodedToken = await admin.auth().verifyIdToken(token);
-    req.payload = decodedToken;
-    next();
-  } catch (error) {
-    console.error("Error while verifying token", error);
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-};
+        const tokenArr = req.headers.authorization.split(" ")
+        const tokenType = tokenArr[0]
+        const token = tokenArr[1]
 
-module.exports = isAuthenticated;
+        if(tokenType!== "Bearer"){
+            console.log("token no valido")
+            return null
+        }
+
+        console.log("token existente y de tipo correcto")
+        return token
+
+        
+
+
+    }
+})
+
+module.exports = isAuthenticated

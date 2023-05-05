@@ -20,24 +20,30 @@ router.get("/", isAuthenticated, async (req, res, next) => {
 
 //PATCH "/:id" => edit of profil
 router.patch("/", isAuthenticated, async (req, res, next) => {
-  const { _id } = req.payload;
-  const { name, imageProfile, description, age, activity, lieux } = req.body;
-
+  
+  const { username, imageProfile, description, age, activity, lieux, gender } = req.body;
+  const userId = req.payload.userId;
+ 
   try {
-    const foundUsername = await User.findOne({ name: name });
+    const foundUsername = await User.findOne({ username: username });
+    // const _id = await User.findOne({})
 
+    
     if (foundUsername !== null) {
       res.status(400).json({ errorMessage: "This name has already been used" });
       return;
     }
 
-    await User.findByIdAndUpdate(_id, {
-      name,
+
+    await User.findByIdAndUpdate(userId, {
+      username,
       imageProfile,
       description,
       age,
       activity,
-      lieux
+      lieux,
+      gender
+
       
     });
     res.json("the edit it's OK");
