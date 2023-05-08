@@ -13,14 +13,16 @@ router.post("/signup", async (req, res, next) => {
 
   try {
     // Verify the Firebase ID token
-    const decodedToken = await firebaseAdmin.auth().verifyIdToken(firebaseToken);
+    const decodedToken = await firebaseAdmin
+      .auth()
+      .verifyIdToken(firebaseToken);
 
     if (!decodedToken) {
       res.status(400).json({ errorMessage: "Invalid token" });
       return;
     }
 
-    // Find or create user based on Firebase UID
+    // create user based on Firebase UID
     const { uid, email } = decodedToken;
     let user = await User.findOne({ firebaseUid: uid });
 
@@ -31,13 +33,13 @@ router.post("/signup", async (req, res, next) => {
         username: "Username",
         friends: [],
       });
-    }else{
+    } else {
       res.status(200).json({ errorMessage: "Already registered" });
-      return
+      return;
     }
 
     // Create JWT for user
-    const jwtSecret =  process.env.TOKEN_SECRET;
+    const jwtSecret = process.env.TOKEN_SECRET;
     const jwtPayload = {
       userId: user._id,
       firebaseUid: uid,
@@ -47,26 +49,24 @@ router.post("/signup", async (req, res, next) => {
     };
     const authToken = jwt.sign(jwtPayload, jwtSecret, jwtOptions);
 
-    res.status(200).json({ message: "Logged in successfully", authToken });
+    res.status(200).json({ message: "User created successfully", authToken });
   } catch (error) {
     console.error("Error:", error); // Add error logging here
     res.status(500).json({ errorMessage: "An error occurred during login" });
     next(error);
   }
-  });
-  
+});
 
 // POST "/auth/login" Valider credential
 
-
 router.post("/login", async (req, res, next) => {
-  
   const { firebaseToken } = req.body;
-  console.log(req.body);
 
   try {
     // Verify the Firebase ID token
-    const decodedToken = await firebaseAdmin.auth().verifyIdToken(firebaseToken);
+    const decodedToken = await firebaseAdmin
+      .auth()
+      .verifyIdToken(firebaseToken);
 
     if (!decodedToken) {
       res.status(400).json({ errorMessage: "Invalid token" });
@@ -77,10 +77,13 @@ router.post("/login", async (req, res, next) => {
     const { uid } = decodedToken;
     let user = await User.findOne({ firebaseUid: uid });
 
-
+    if (!user) {
+      res.status(200).json({ errorMessage: "There is no created user" });
+      return
+    }
 
     // Create JWT for user
-    const jwtSecret =  process.env.TOKEN_SECRET;
+    const jwtSecret = process.env.TOKEN_SECRET;
     const jwtPayload = {
       userId: user._id,
       firebaseUid: uid,
@@ -90,7 +93,9 @@ router.post("/login", async (req, res, next) => {
     };
     const authToken = jwt.sign(jwtPayload, jwtSecret, jwtOptions);
 
-    res.status(200).json({ message: "Logged in successfully", authToken, user });
+    res
+      .status(200)
+      .json({ message: "Logged in successfully", authToken, user });
   } catch (error) {
     console.error("Error:", error); // Add error logging here
     res.status(500).json({ errorMessage: "An error occurred during login" });
@@ -98,23 +103,11 @@ router.post("/login", async (req, res, next) => {
   }
 });
 
-
 // GET "/auth/verify" => verifier si l utilisateur est actif
 
 router.get("/verify", isAuthenticated, (req, res, next) => {
-
-console.log(req.payload)    
-res.status(200).json(req.payload)
-
+  console.log(req.payload);
+  res.status(200).json(req.payload);
 });
-
-
-
-
-
-
-
-
-
 
 module.exports = router;

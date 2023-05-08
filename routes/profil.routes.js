@@ -5,13 +5,13 @@ const isAuthenticated = require("../middlewares/auth.middlewares.js");
 
 //GET "/" => render information from profil
 router.get("/", isAuthenticated, async (req, res, next) => {
-  const { _id } = req.payload;
 
+  const { userId } = req.payload;
+  console.log(userId)
   try {
-    const response = await User.findById(_id)
-      .populate("friends", "name")
-      .select("-password");
-
+    const response = await User.findById(userId)
+      // .populate("friends", "username")
+      
     res.json(response);
   } catch (error) {
     next(error);
