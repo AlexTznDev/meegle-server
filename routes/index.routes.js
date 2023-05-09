@@ -14,5 +14,8 @@ router.use("/profil", profilRoutes)
 const eventRoutes = require("./event.routes.js")
 router.use("/event", eventRoutes)
 
+const uploadRoutes = require("./upload.routes");
+router.use("/upload", uploadRoutes);
+
 
 module.exports = router;
