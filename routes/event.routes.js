@@ -6,45 +6,35 @@ const isAuthenticated = require("../middlewares/auth.middlewares.js");
 
 //GET "/exercise" => renderizar los exercissios
 router.get("/", isAuthenticated, async (req, res, next) => {
+  const { userId } = req.payload;
+
   try {
-    const response = await Exercise.find().select({
-      category: 1,
-      image: 1,
-      tagline: 1,
-      calories: 1,
-      name: 1,
-    });
+    const response = await Event.find({owner:userId})
     res.json(response);
   } catch (error) {
     next(error);
   }
+
 });
+
+
 
 //POST "/" => crear event
 router.post("/", isAuthenticated, async (req, res, next) => {
-  const {
-    latitude,
-    longitude,
-    date,
-    hour,
-    description,
-    typeEvent,
-    titre,
-    image,
-  } = req.body;
-  const { _id } = req.payload;
+  const { date, hour, localisation, NumberImage, numberPlayerNeed, datePrecise } = req.body;
+  const { userId } = req.payload;
   try {
     await Event.create({
-      owner: _id,
-      latitude,
-      longitude,
-      description,
+      owner: userId,
       date,
       hour,
-      typeEvent,
-      titre,
-      participant: [],
-      image,
+      localisation,
+      NumberImage,
+      numberPlayerNeed,
+      datePrecise,
+      participant: [
+        userId
+      ],
     });
   } catch (error) {
     next(error);
@@ -97,94 +87,75 @@ router.patch("/:id", async (req, res, next) => {
   }
 });
 
-
-
-
-
 //PATCH "/:idEvent/addrequest" => ajouter participant au request de participation a l'évent
-router.patch("/:idEvent/addRequest", isAuthenticated ,async (req, res, next) => {
-    
-    const {idEvent} = req.params
-    const {_id} = req.payload
+router.patch(
+  "/:idEvent/addRequest",
+  isAuthenticated,
+  async (req, res, next) => {
+    const { idEvent } = req.params;
+    const { _id } = req.payload;
 
     try {
       await Event.findByIdAndUpdate(idEvent, {
-        $push: { requestParticipation: _id},
+        $push: { requestParticipation: _id },
       });
-  
+
       res.json("Participant ajouter");
     } catch (error) {
       next(error);
     }
-  });
-
-
-
-
-
-  
+  }
+);
 
 //PATCH "/:idEvent/remove" => retirer participant a l'évent
-router.patch("/:idEvent/remove", isAuthenticated ,async (req, res, next) => {
-    
-    const {idEvent} = req.params
-    const {idUser} = req.body
+router.patch("/:idEvent/remove", isAuthenticated, async (req, res, next) => {
+  const { idEvent } = req.params;
+  const { idUser } = req.body;
 
-    try {
-      await Event.findByIdAndUpdate(idEvent, {
-        $pull: { participant: idUser},
-      });
-  
-      res.json("Participant retirer");
-    } catch (error) {
-      next(error);
-    }
-  });
+  try {
+    await Event.findByIdAndUpdate(idEvent, {
+      $pull: { participant: idUser },
+    });
 
+    res.json("Participant retirer");
+  } catch (error) {
+    next(error);
+  }
+});
 
 //PATCH "/:idEvent/acceptRequest" => ajouter participant a l'évent
-router.patch("/:idEvent/acceptRequest" ,async (req, res, next) => {
-    
-    const {idEvent} = req.params
-    const {idUser} = req.body
+router.patch("/:idEvent/acceptRequest", async (req, res, next) => {
+  const { idEvent } = req.params;
+  const { idUser } = req.body;
 
-    try {
-      await Event.findByIdAndUpdate(idEvent, {
-        $pull: { requestParticipation: idUser},
-        $push: { participant: idUser}
+  try {
+    await Event.findByIdAndUpdate(idEvent, {
+      $pull: { requestParticipation: idUser },
+      $push: { participant: idUser },
+    });
 
-      });
-  
-      res.json("User accepté en participant");
-    } catch (error) {
-      next(error);
-    }
-  });
+    res.json("User accepté en participant");
+  } catch (error) {
+    next(error);
+  }
+});
 
 //! peutetre possibilité d utiliser une seul route de back pour accepter ou refuser grace a un boolean en envoi req.body
 //PATCH "/:idEvent/refuseRequest" => refuser participant a l'évent
-router.patch("/:idEvent/refuseRequest" ,async (req, res, next) => {
-    
-    const {idEvent} = req.params
-    const {idUser} = req.body
+router.patch("/:idEvent/refuseRequest", async (req, res, next) => {
+  const { idEvent } = req.params;
+  const { idUser } = req.body;
 
-    try {
-      await Event.findByIdAndUpdate(idEvent, {
-        $pull: { requestParticipation: idUser}
-        
-      });
-  
-      res.json("User refusé");
-    } catch (error) {
-      next(error);
-    }
-  });
+  try {
+    await Event.findByIdAndUpdate(idEvent, {
+      $pull: { requestParticipation: idUser },
+    });
 
-
-
-
-
-
+    res.json("User refusé");
+  } catch (error) {
+    next(error);
+  }
+});
 
 //DELETE "/:id" => delete el exercissio por su id
 router.delete("/:id", async (req, res, next) => {

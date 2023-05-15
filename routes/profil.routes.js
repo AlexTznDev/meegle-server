@@ -7,7 +7,7 @@ const isAuthenticated = require("../middlewares/auth.middlewares.js");
 router.get("/", isAuthenticated, async (req, res, next) => {
 
   const { userId } = req.payload;
-  console.log(userId)
+
   try {
     const response = await User.findById(userId)
       // .populate("friends", "username")

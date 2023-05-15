@@ -1,47 +1,36 @@
 const mongoose = require("mongoose");
 
 const eventSchema = new mongoose.Schema({
-  
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
-  latitude: String,
-  longitude: String, 
-  date:String,
-  hour:String,
-  description:String,
+  date: String,
+  hour: String,
+  datePrecise:String,
+  localisation: {
+    location: {
+      lat: Number,
+      lng: Number,
+    },
+    adress: String,
+  },
+  NumberImage: Number,
+  numberPlayerNeed:Number,
 
-requestParticipation:[
-
-  {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-  }
-
-],
-
-  participant:[
+  requestParticipation: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-    }
-  ]
-,
-  typeEvent:{
-    type:String,
-enum:[
-  "Sport",
-  "Drink & Food",
-  "Concert",
-  "Visite",
-  "NightClub",
-  "Evenement organisé"
-]
-  },
-  titre: String,
-  image: String
+    },
+  ],
 
+  participant: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
 });
 
 const Event = mongoose.model("Event", eventSchema);
