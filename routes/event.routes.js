@@ -42,6 +42,18 @@ router.post("/", isAuthenticated, async (req, res, next) => {
   res.json("the event was create");
 });
 
+//GET "/eventsAll" => renderise tout les events
+router.get("/All/", async (req, res, next) => {
+
+  try {
+    const response = await Event.find()
+    res.json(response);
+  } catch (error) {
+    next(error);
+  }
+
+});
+
 //GET "/:id" => renderizar a detailles de el exercissio
 router.get("/:id", async (req, res, next) => {
   const { id } = req.params;
@@ -55,6 +67,8 @@ router.get("/:id", async (req, res, next) => {
     next(error);
   }
 });
+
+
 
 //PATCH "/:id" => edit event
 router.patch("/:id", async (req, res, next) => {
